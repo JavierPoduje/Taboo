@@ -26,6 +26,7 @@ M.close = function()
 
 	local left_bufnr = M.buffers.left
 	local right_bufnr = M.buffers.right
+
 	M.buffers.left = -1
 	M.buffers.right = -1
 
@@ -41,7 +42,7 @@ end
 
 -- remove a tab by id
 M.remove = function()
-	print("not implemented")
+	api.remove(M.buffers)
 end
 
 return M

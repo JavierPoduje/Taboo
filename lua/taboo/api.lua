@@ -1,12 +1,18 @@
 local popup = require("plenary.popup")
 local setup = require("taboo.setup")
 
-local M = {}
+local M = {
+	tabs_to_remove = {}
+}
 
 -- close the preview buffers
 M.close = function(buffers)
 	vim.api.nvim_buf_delete(buffers.left, { force = true })
 	vim.api.nvim_buf_delete(buffers.right, { force = true })
+	for _, tabnr in pairs(M.tabs_to_remove) do
+		vim.api.nvim_command(tabnr .. "tabclose")
+	end
+	M.tabs_to_remove = {}
 end
 
 M.select = function(buffers)
@@ -17,7 +23,7 @@ M.select = function(buffers)
 end
 
 M.enrich_preview = function(buffers)
-	M._enrich_left_buffer(buffers.left)
+	M._reload_left_buffer_content(buffers)
 end
 
 M.set_mappings = function(left_bufnr)
@@ -27,6 +33,31 @@ M.set_mappings = function(left_bufnr)
 			vim.api.nvim_buf_set_keymap(left_bufnr, mode, key_bind, cb, { silent = true })
 		end
 	end
+end
+
+M.remove = function(buffers)
+	-- don't delete if there's only one tab available
+	local tabs = vim.fn.gettabinfo()
+	if #tabs == 1 then
+		print("can't remove the only remaining tab")
+		return
+	end
+
+	-- do the deletion
+	local linepos = M._get_cursor_line(buffers.left)
+	local tabnr = M._get_tabnr_by_linenr(buffers.left, linepos)
+
+	if tabnr == nil then
+		print("invalid tabnr")
+		return
+	end
+
+	table.insert(M.tabs_to_remove, tabnr)
+
+	vim.schedule(function ()
+		vim.cmd(":TabooClose")
+		vim.cmd(":TabooOpen")
+	end)
 end
 
 M.open_preview = function()
@@ -74,7 +105,7 @@ M.reload_on_cursor_move = function(buffers)
 	vim.api.nvim_create_autocmd("CursorMoved", {
 		buffer = buffers.left,
 		callback = function()
-			M._reload(buffers.left, buffers.right)
+			M._reload_right_buffer_content(buffers)
 		end,
 	})
 end
@@ -83,11 +114,14 @@ end
 -- HELPERS --
 -- ------- --
 
-M._reload = function(left_bufnr, right_bufnr)
+M._reload_right_buffer_content = function(buffers)
+	local left_bufnr = buffers.left
+	local right_bufnr = buffers.right
+
 	local linepos = M._get_cursor_line(left_bufnr)
 	local tabnr = M._get_tabnr_by_linenr(left_bufnr, linepos)
-	local buffers = M._get_buffers_by_tab(tabnr)
-	local filenames = M._get_buffer_filenames(buffers)
+	local tab_buffers = M._get_buffers_by_tab(tabnr)
+	local filenames = M._get_buffer_filenames(tab_buffers)
 
 	vim.api.nvim_buf_set_lines(right_bufnr, 0, -1, true, filenames)
 end
@@ -102,7 +136,8 @@ M._get_buffer_filenames = function(buffers)
 	return lines
 end
 
-M._enrich_left_buffer = function(bufnr)
+M._reload_left_buffer_content = function(buffers)
+	local bufnr = buffers.left
 	local tabs = vim.fn.gettabinfo()
 	local lines = {}
 	for _, tab in pairs(tabs) do
@@ -124,11 +159,7 @@ end
 
 M._get_tabnr_by_linenr = function(bufnr, linenr)
 	local lines = vim.api.nvim_buf_get_lines(bufnr, linenr - 1, linenr, false)
-	if #lines > 0 then
-		return tonumber(lines[1])
-	else
-		return nil
-	end
+	return tonumber(lines[1])
 end
 
 -- get the buffers of a tab by tab number
