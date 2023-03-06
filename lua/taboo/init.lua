@@ -12,12 +12,11 @@ vim.api.nvim_create_autocmd({ "BufLeave, VimLeave" }, {
 	group = taboo_group,
 })
 
-M.hi = function()
-	print("hi!")
-end
-
 -- Sets the commands
 vim.cmd('command! TabooOpen lua require("taboo.commands").open_preview()')
 vim.cmd('command! TabooClose lua require("taboo.commands").close()')
+
+vim.api.nvim_set_keymap('n', '<leader>to', ':TabooOpen<cr>', { noremap = true, silent = false })
+vim.api.nvim_set_keymap('n', '<leader>tp', ':TabooClose<cr>', { noremap = true, silent = false })
 
 return M

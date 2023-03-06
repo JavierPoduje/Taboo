@@ -39,7 +39,7 @@ M.open_preview = function()
 		borderhighlight = "PreviewBorder",
 		enter = false,
 		line = math.floor(((vim.o.lines - height) / 2) - 1),
-		col = math.floor(((vim.o.columns - total_width) + rwidth + 6) / 2),
+		col = math.floor(((vim.o.columns - total_width) + rwidth + 7) / 2),
 		minwidth = rwidth,
 		minheight = height,
 		borderchars = setup.config.borderchars,
@@ -47,6 +47,13 @@ M.open_preview = function()
 
 	M.buffers.left = left_bufnr
 	M.buffers.right = right_bufnr
+
+	vim.api.nvim_create_autocmd("CursorMoved", {
+		buffer = M.buffers.left,
+		callback = function()
+			api.reload(M.buffers.left, M.buffers.right)
+		end,
+	})
 
 	api.enrich_preview(M.buffers)
 end
