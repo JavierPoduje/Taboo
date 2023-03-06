@@ -9,6 +9,13 @@ M.close = function(buffers)
 	vim.api.nvim_buf_delete(buffers.right, { force = true })
 end
 
+M.select = function(buffers)
+	local linepos = M._get_cursor_line(buffers.left)
+	local tabnr = M._get_tabnr_by_linenr(buffers.left, linepos)
+	M.close(buffers)
+	vim.api.nvim_set_current_tabpage(tabnr)
+end
+
 M.enrich_preview = function(buffers)
 	M._enrich_left_buffer(buffers.left)
 end
@@ -78,7 +85,7 @@ end
 
 M._reload = function(left_bufnr, right_bufnr)
 	local linepos = M._get_cursor_line(left_bufnr)
-	local tabnr = M._get_line_content(left_bufnr, linepos)
+	local tabnr = M._get_tabnr_by_linenr(left_bufnr, linepos)
 	local buffers = M._get_buffers_by_tab(tabnr)
 	local filenames = M._get_buffer_filenames(buffers)
 
@@ -115,8 +122,8 @@ M._get_cursor_line = function(bufnr)
 	end
 end
 
-M._get_line_content = function(bufnr, line_number)
-	local lines = vim.api.nvim_buf_get_lines(bufnr, line_number - 1, line_number, false)
+M._get_tabnr_by_linenr = function(bufnr, linenr)
+	local lines = vim.api.nvim_buf_get_lines(bufnr, linenr - 1, linenr, false)
 	if #lines > 0 then
 		return tonumber(lines[1])
 	else

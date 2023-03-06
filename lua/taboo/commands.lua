@@ -24,16 +24,19 @@ M.close = function()
 		return
 	end
 
-	api.close(M.buffers)
-
-	-- reset left and right bufnr to sentinel
+	local left_bufnr = M.buffers.left
+	local right_bufnr = M.buffers.right
 	M.buffers.left = -1
 	M.buffers.right = -1
+
+	api.close({ left = left_bufnr, right = right_bufnr })
 end
 
 -- select a tab by id
 M.select = function()
-	print("not implemented")
+	api.select(M.buffers)
+	M.buffers.left = -1
+	M.buffers.right = -1
 end
 
 -- remove a tab by id
