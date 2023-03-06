@@ -58,6 +58,14 @@ M.open_preview = function()
 		end,
 	})
 
+	-- set mappings
+	for mode in pairs(setup.mappings) do
+		for key_bind in pairs(setup.mappings[mode]) do
+			local cb = setup.mappings[mode][key_bind]
+			vim.api.nvim_buf_set_keymap(left_bufnr, mode, key_bind, cb, { silent = true })
+		end
+	end
+
 	api.enrich_preview(M.buffers)
 end
 
@@ -67,12 +75,18 @@ M.close = function()
 end
 
 -- select a tab by id
-M.select = function() end
+M.select = function()
+	print("not implemented")
+end
 
 -- remove a tab by id
-M.remove = function() end
+M.remove = function()
+	print("not implemented")
+end
 
 -- reload the preview after a movement
-M.reload = function() end
+M.reload = function()
+	print("not implemented")
+end
 
 return M

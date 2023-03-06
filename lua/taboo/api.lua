@@ -1,3 +1,4 @@
+local setup = require("taboo.setup")
 local M = {}
 
 -- close the preview buffers

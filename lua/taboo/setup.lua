@@ -3,12 +3,10 @@ local M = {}
 local definitions = {
 	mappings = {
 		n = {
-			["<Esc>"] = ':lua require("taboo").close()<CR>',
-			["<C-c>"] = ':lua require("taboo").close()<CR>',
-			["<CR>"] = ':lua require("taboo").select()<CR>',
-			["dd"] = ':lua require("taboo").remove()<CR>',
-			["j"] = ':lua require("taboo").reload("down")<CR>',
-			["k"] = ':lua require("taboo").reload("up")<CR>',
+			["<Esc>"] = ':lua require("taboo.commands").close()<CR>',
+			["<C-c>"] = ':lua require("taboo.commands").close()<CR>',
+			["<CR>"] = ':lua require("taboo.commands").select()<CR>',
+			["dd"] = ':lua require("taboo.commands").remove()<CR>',
 		},
 	},
 	config = {
