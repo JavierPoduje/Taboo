@@ -17,7 +17,7 @@ local definitions = {
 				width = 3,
 			},
 			right = {
-				width = 80,
+				width = 40,
 			},
 			height = 25,
 		},

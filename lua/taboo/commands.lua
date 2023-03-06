@@ -1,5 +1,7 @@
 local popup = require("plenary.popup")
+
 local setup = require("taboo.setup")
+local api = require('taboo.api')
 
 local M = {
 	buffers = {
@@ -45,12 +47,13 @@ M.open_preview = function()
 
 	M.buffers.left = left_bufnr
 	M.buffers.right = right_bufnr
+
+	api.enrich_preview(M.buffers)
 end
 
 -- close the preview
 M.close = function()
-	vim.api.nvim_buf_delete(M.buffers.left, {})
-	vim.api.nvim_buf_delete(M.buffers.right, {})
+	api.close(M.buffers)
 end
 
 -- select a tab by id
