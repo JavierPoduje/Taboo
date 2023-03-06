@@ -12,7 +12,7 @@ local definitions = {
 	config = {
 		windows = {
 			left = {
-				width = 3,
+				width = 2,
 			},
 			right = {
 				width = 40,
@@ -20,10 +20,6 @@ local definitions = {
 			height = 25,
 		},
 		borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
-		directions = {
-			up = -1,
-			down = 1,
-		},
 	},
 }
 
