@@ -19,6 +19,9 @@ M.open_preview = function()
 	local height = setup.config.windows.height
 
 	local total_width = lwidth + rwidth
+	local borders = 2
+	local left_col = math.floor((vim.o.columns / 2) - (total_width / 2))
+	local top_row = math.floor(((vim.o.lines - height) / 2) - 1)
 
 	popup.create(left_bufnr, {
 		border = {},
@@ -26,8 +29,8 @@ M.open_preview = function()
 		highlight = "PickersHighlight",
 		borderhighlight = "PickersBorder",
 		enter = true,
-		line = math.floor(((vim.o.lines - height) / 2) - 1),
-		col = math.floor((vim.o.columns - lwidth) / 2),
+		line = top_row,
+		col = left_col,
 		minwidth = lwidth,
 		minheight = height,
 		borderchars = setup.config.borderchars,
@@ -38,8 +41,8 @@ M.open_preview = function()
 		highlight = "PreviewHighlight",
 		borderhighlight = "PreviewBorder",
 		enter = false,
-		line = math.floor(((vim.o.lines - height) / 2) - 1),
-		col = math.floor(((vim.o.columns - total_width) + rwidth + 7) / 2),
+		line = top_row,
+		col = left_col + lwidth + borders,
 		minwidth = rwidth,
 		minheight = height,
 		borderchars = setup.config.borderchars,
