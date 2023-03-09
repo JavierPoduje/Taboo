@@ -1,38 +1,23 @@
 local popup = require("plenary.popup")
 local setup = require("taboo.setup")
 
-local M = {
-	tabs_to_remove = {}
-}
+local M = {}
 
 -- close the preview buffers
-M.close = function(buffers)
+M.close_preview = function(buffers)
 	vim.api.nvim_buf_delete(buffers.left, { force = true })
 	vim.api.nvim_buf_delete(buffers.right, { force = true })
-	for _, tabnr in pairs(M.tabs_to_remove) do
-		vim.api.nvim_command(tabnr .. "tabclose")
-	end
-	M.tabs_to_remove = {}
 end
 
 M.select = function(buffers)
 	local linepos = M._get_cursor_line(buffers.left)
 	local tabnr = M._get_tabnr_by_linenr(buffers.left, linepos)
-	M.close(buffers)
+	M.close_preview(buffers)
 	vim.api.nvim_set_current_tabpage(tabnr)
 end
 
 M.enrich_preview = function(buffers)
 	M._reload_left_buffer_content(buffers)
-end
-
-M.set_mappings = function(left_bufnr)
-	for mode in pairs(setup.mappings) do
-		for key_bind in pairs(setup.mappings[mode]) do
-			local cb = setup.mappings[mode][key_bind]
-			vim.api.nvim_buf_set_keymap(left_bufnr, mode, key_bind, cb, { silent = true })
-		end
-	end
 end
 
 M.remove = function(buffers)
@@ -52,9 +37,9 @@ M.remove = function(buffers)
 		return
 	end
 
-	table.insert(M.tabs_to_remove, tabnr)
+	vim.api.nvim_command(tabnr .. "tabclose")
 
-	vim.schedule(function ()
+	vim.schedule(function()
 		vim.cmd(":TabooClose")
 		vim.cmd(":TabooOpen")
 	end)
@@ -126,8 +111,6 @@ M._reload_right_buffer_content = function(buffers)
 	vim.api.nvim_buf_set_lines(right_bufnr, 0, -1, true, filenames)
 end
 
-
-
 M._get_buffer_filenames = function(buffers)
 	local lines = {}
 	for _, buffer in pairs(buffers) do
@@ -164,19 +147,38 @@ end
 
 -- get the buffers of a tab by tab number
 M._get_buffers_by_tab = function(tabnr)
-	local wins = vim.api.nvim_list_wins()
+	local tabsinfo = vim.fn.gettabinfo(tabnr)
+
+	if #tabsinfo == 0 then
+		return {}
+	end
+
+	local tab = tabsinfo[1]
+
+	if #tab.windows == 0 then
+		return {}
+	end
+
+	local wins = tab.windows
 	local buffers = {}
 	for _, winid in ipairs(wins) do
-		local win_tabnr = vim.api.nvim_win_get_tabpage(winid)
-		if win_tabnr == tabnr then
-			local bufnr = vim.api.nvim_win_get_buf(winid)
-			local bufname = vim.fn.bufname(bufnr)
-			if bufname ~= "" then
-				table.insert(buffers, { bufnr = bufnr, bufname = bufname })
-			end
+		local bufnr = vim.api.nvim_win_get_buf(winid)
+		local bufname = vim.fn.bufname(bufnr)
+		if bufname ~= "" then
+			table.insert(buffers, { bufnr = bufnr, bufname = bufname })
 		end
 	end
+
 	return buffers
+end
+
+M.set_mappings = function(left_bufnr)
+	for mode in pairs(setup.mappings) do
+		for key_bind in pairs(setup.mappings[mode]) do
+			local cb = setup.mappings[mode][key_bind]
+			vim.api.nvim_buf_set_keymap(left_bufnr, mode, key_bind, cb, { silent = true })
+		end
+	end
 end
 
 return M

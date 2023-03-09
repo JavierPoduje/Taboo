@@ -12,13 +12,13 @@ M.open_preview = function()
 	M.buffers.left = bufs.left_bufnr
 	M.buffers.right = bufs.right_bufnr
 
-	api.reload_on_cursor_move(M.buffers)
 	api.set_mappings(M.buffers.left)
 	api.enrich_preview(M.buffers)
+	api.reload_on_cursor_move(M.buffers)
 end
 
 -- close the preview
-M.close = function()
+M.close_preview = function()
 	if M.buffers.left == -1 or M.buffers.right == -1 then
 		print("No Taboo preview to close")
 		return
@@ -30,7 +30,7 @@ M.close = function()
 	M.buffers.left = -1
 	M.buffers.right = -1
 
-	api.close({ left = left_bufnr, right = right_bufnr })
+	api.close_preview({ left = left_bufnr, right = right_bufnr })
 end
 
 -- select a tab by id
