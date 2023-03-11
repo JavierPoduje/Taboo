@@ -3,12 +3,6 @@ local setup = require("taboo.setup")
 
 local M = {}
 
-M.setup = function(config)
-	M.definitions = M.merge_table_impl(config, setup)
-	print("here!")
-	P(M.definitions)
-end
-
 -- close the preview buffers
 M.close_preview = function(buffers)
 	vim.api.nvim_buf_delete(buffers.left, { force = true })
@@ -58,9 +52,9 @@ M.open_preview = function()
 	local left_bufnr = vim.api.nvim_create_buf(false, false)
 	local right_bufnr = vim.api.nvim_create_buf(false, false)
 
-	local lwidth = setup.config.windows.left.width
-	local rwidth = setup.config.windows.right.width
-	local height = setup.config.windows.height
+	local lwidth = setup.size.left.width
+	local rwidth = setup.size.right.width
+	local height = setup.size.height
 
 	local total_width = lwidth + rwidth
 	local borders = 2
@@ -77,7 +71,7 @@ M.open_preview = function()
 		col = left_col,
 		minwidth = lwidth,
 		minheight = height,
-		borderchars = setup.config.borderchars,
+		borderchars = setup.borders,
 	}, false)
 	popup.create(right_bufnr, {
 		border = {},
@@ -89,7 +83,7 @@ M.open_preview = function()
 		col = left_col + lwidth + borders,
 		minwidth = rwidth,
 		minheight = height,
-		borderchars = setup.config.borderchars,
+		borderchars = setup.borders,
 	}, false)
 
 	return { left_bufnr = left_bufnr, right_bufnr = right_bufnr }
