@@ -192,11 +192,9 @@ M._get_buffers_by_tab = function(tabnr)
 end
 
 M.set_mappings = function(left_bufnr)
-	for mode in pairs(setup.mappings) do
-		for key_bind in pairs(setup.mappings[mode]) do
-			local cb = setup.mappings[mode][key_bind]
-			vim.api.nvim_buf_set_keymap(left_bufnr, mode, key_bind, cb, { silent = true })
-		end
+	for key_bind in pairs(setup.mappings) do
+		local cb = setup.mappings[key_bind]
+		vim.api.nvim_buf_set_keymap(left_bufnr, "n", key_bind, cb, { silent = true })
 	end
 end
 

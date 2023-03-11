@@ -1,0 +1,5 @@
+describe("api", function ()
+	it("can be required", function ()
+		require('taboo.api')
+	end)
+end)
