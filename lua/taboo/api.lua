@@ -12,8 +12,11 @@ end
 M.select = function(buffers)
 	local linepos = M._get_cursor_line(buffers.left)
 	local tabnr = M._get_tabnr_by_linenr(buffers.left, linepos)
+
 	M.close_preview(buffers)
-	vim.api.nvim_set_current_tabpage(tabnr)
+
+	local tabid = M._get_tabid_by_tabnr(tabnr)
+	vim.api.nvim_set_current_tabpage(tabid)
 end
 
 M.enrich_preview = function(buffers)
@@ -138,6 +141,22 @@ M._get_cursor_line = function(bufnr)
 	else
 		return nil
 	end
+end
+
+M._get_tabid_by_tabnr = function(tabnr)
+	local tabsinfo = vim.fn.gettabinfo(tabnr)
+	if #tabsinfo == 0 then
+		return {}
+	end
+
+	local tab = tabsinfo[1]
+
+	if #tab.windows == 0 then
+		return {}
+	end
+
+	local window = tab.windows[1]
+	return vim.api.nvim_win_get_tabpage(window)
 end
 
 M._get_tabnr_by_linenr = function(bufnr, linenr)
