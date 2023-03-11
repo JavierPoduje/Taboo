@@ -1,7 +1,8 @@
 local M = {}
 
-local definitions = {
+local default_setup = {
 	mappings = {
+		-- ["*"] = ':lua require("taboo.commands").open_preview()<CR>', this should be manually setup
 		["<Esc>"] = ':lua require("taboo.commands").close_preview()<CR>',
 		["<C-c>"] = ':lua require("taboo.commands").close_preview()<CR>',
 		["<CR>"] = ':lua require("taboo.commands").select()<CR>',
@@ -23,6 +24,6 @@ local definitions = {
 
 return setmetatable(M, {
 	__index = function(_, k)
-		return definitions[k]
+		return default_setup[k]
 	end,
 })

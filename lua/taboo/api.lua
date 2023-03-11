@@ -3,6 +3,12 @@ local setup = require("taboo.setup")
 
 local M = {}
 
+M.setup = function(config)
+	M.definitions = M.merge_table_impl(config, setup)
+	print("here!")
+	P(M.definitions)
+end
+
 -- close the preview buffers
 M.close_preview = function(buffers)
 	vim.api.nvim_buf_delete(buffers.left, { force = true })
@@ -195,6 +201,20 @@ M.set_mappings = function(left_bufnr)
 	for key_bind in pairs(setup.mappings) do
 		local cb = setup.mappings[key_bind]
 		vim.api.nvim_buf_set_keymap(left_bufnr, "n", key_bind, cb, { silent = true })
+	end
+end
+
+M.merge_table_impl = function(t1, t2)
+	for k, v in pairs(t2) do
+		if type(v) == "table" then
+			if type(t1[k]) == "table" then
+				M.merge_table_impl(t1[k], v)
+			else
+				t1[k] = v
+			end
+		else
+			t1[k] = v
+		end
 	end
 end
 
