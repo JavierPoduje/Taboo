@@ -35,7 +35,7 @@ end
 
 -- select a tab by id
 M.select = function()
-	api.select(M.buffers)
+	api.select(M._buffers)
 	M._buffers.left = -1
 	M._buffers.right = -1
 end
