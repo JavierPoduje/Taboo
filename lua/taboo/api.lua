@@ -182,13 +182,32 @@ M._get_buffers_by_tab = function(tabnr)
 	local buffers = {}
 	for _, winid in ipairs(wins) do
 		local bufnr = vim.api.nvim_win_get_buf(winid)
-		local bufname = vim.fn.bufname(bufnr)
-		if bufname ~= "" then
+
+		local bufname = M._get_bufname(bufnr)
+		local current_path = vim.fn.expand("%:p:h")
+
+		if bufname ~= "" and bufname ~= current_path .. "/" then
 			table.insert(buffers, { bufnr = bufnr, bufname = bufname })
 		end
 	end
 
 	return buffers
+end
+
+M._get_bufname = function(bufnr)
+	local bufname = vim.fn.bufname(bufnr)
+	local current_path = vim.fn.expand("%:p:h")
+	local git_directory = current_path .. "/.git"
+	local git_directory_exists = io.open(git_directory, "r") ~= nil
+
+	-- if the user is using git, remove the path to the project from the bufnames
+	if git_directory_exists then
+		local pattern = "^" .. current_path
+		return string.gsub(bufname, pattern, "")
+	end
+
+	-- otherwise, just return the full bufname
+	return current_path .. "/" .. bufname
 end
 
 M.set_mappings = function(left_bufnr)
