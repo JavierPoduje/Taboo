@@ -206,8 +206,17 @@ M._get_bufname = function(bufnr)
 		return string.gsub(bufname, pattern, "")
 	end
 
-	-- otherwise, just return the full bufname
-	return current_path .. "/" .. bufname
+	-- if the current_path is already included in the bufname,
+	-- just return the raw bufname
+	if current_path ~= "" and current_path ~= "/" and string.match(bufname, current_path) ~= nil then
+		return bufname
+	end
+
+	if string.sub(current_path, -1) == "/" then
+		return current_path .. bufname
+	else
+		return current_path .. "/" .. bufname
+	end
 end
 
 M.set_mappings = function(left_bufnr)
