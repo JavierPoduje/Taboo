@@ -15,27 +15,33 @@
 ### Using Plug
 
 ```vim
-Plug 'JavierPoduje/taboo'
+Plug 'javierpoduje/taboo'
 ```
 
 Then run :PlugInstall to install the plugin.
 
 ### Using Packer
-
 ```vim
 require('packer').startup(function(use)
   use 'javierpoduje/taboo'
 end)
 ```
-
 Then run :PackerInstall to install the plugin.
+
+### Using Lazy
+```lua
+require("lazy").setup({
+  "javierpoduje/taboo",
+})
+```
 
 ## Configuration
 
-In your Neovim configuration add the following:
+In your Neovim configuration add:
 
 ```vim
 require("taboo")
+
 vim.api.nvim_set_keymap("n", "<leader>tt", ":TabooOpen<CR>", { noremap = true, silent = true })
 ```
 
