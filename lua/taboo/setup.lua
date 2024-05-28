@@ -1,3 +1,5 @@
+local width = vim.api.nvim_win_get_width(0) - (vim.api.nvim_win_get_width(0) * 0.15)
+
 return {
 	mappings = {
 		["<Esc>"] = ':lua require("taboo.commands").close_preview()<CR>',
@@ -7,12 +9,12 @@ return {
 	},
 	size = {
 		left = {
-			width = 2,
+			width = 1,
 		},
 		right = {
-			width = 40,
+			width = width,
 		},
-		height = 25,
+		height = math.floor((vim.o.columns - width) / 2),
 	},
 	borders = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
 }

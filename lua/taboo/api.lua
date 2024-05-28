@@ -52,13 +52,11 @@ M.open_preview = function()
 	local left_bufnr = vim.api.nvim_create_buf(false, false)
 	local right_bufnr = vim.api.nvim_create_buf(false, false)
 
+	local borders = 2
 	local lwidth = setup.size.left.width
 	local rwidth = setup.size.right.width
 	local height = setup.size.height
-
-	local total_width = lwidth + rwidth
-	local borders = 2
-	local left_col = math.floor((vim.o.columns / 2) - (total_width / 2))
+	local left_col = math.floor(((vim.o.lines - height) / 2) - 1)
 	local top_row = math.floor(((vim.o.lines - height) / 2) - 1)
 
 	popup.create(left_bufnr, {
