@@ -17,4 +17,5 @@ return {
 		height = math.floor((vim.o.columns - width) / 2),
 	},
 	borders = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+	bufs_names_to_ignore = { "NvimTree", "taboo" },
 }

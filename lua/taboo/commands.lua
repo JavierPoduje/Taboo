@@ -9,8 +9,15 @@ local M = {
 
 M.open_preview = function()
 	local bufs = api.open_preview()
+
 	M._buffers.left = bufs.left_bufnr
 	M._buffers.right = bufs.right_bufnr
+
+  vim.api.nvim_buf_set_option(M._buffers.left, "bufhidden", "delete")
+  vim.api.nvim_buf_set_option(M._buffers.left, "filetype", "taboo")
+  vim.api.nvim_buf_set_option(M._buffers.right, "bufhidden", "delete")
+  vim.api.nvim_buf_set_option(M._buffers.right, "filetype", "taboo")
+
 
 	api.set_mappings(M._buffers.left)
 	api.enrich_preview(M._buffers)

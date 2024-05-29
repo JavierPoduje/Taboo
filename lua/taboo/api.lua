@@ -59,8 +59,7 @@ M.open_preview = function()
 	local left_col = math.floor(((vim.o.lines - height) / 2) - 1)
 	local top_row = math.floor(((vim.o.lines - height) / 2) - 1)
 
-	popup.create(left_bufnr, {
-		border = {},
+	local left_win_id, left_win = popup.create(left_bufnr, {
 		title = false,
 		highlight = "LeftHighlight",
 		borderhighlight = "LeftBorder",
@@ -70,9 +69,8 @@ M.open_preview = function()
 		minwidth = lwidth,
 		minheight = height,
 		borderchars = setup.borders,
-	}, false)
-	popup.create(right_bufnr, {
-		border = {},
+	})
+	local right_win_id, right_win = popup.create(right_bufnr, {
 		title = "~ Taboo ~",
 		highlight = "PreviewHighlight",
 		borderhighlight = "PreviewBorder",
@@ -82,9 +80,16 @@ M.open_preview = function()
 		minwidth = rwidth,
 		minheight = height,
 		borderchars = setup.borders,
-	}, false)
+	})
 
-	return { left_bufnr = left_bufnr, right_bufnr = right_bufnr }
+	return {
+		left_bufnr = left_bufnr,
+		left_win = left_win,
+		left_win_id = left_win_id,
+		right_bufnr = right_bufnr,
+		right_win = right_win,
+		right_win_id = right_win_id,
+	}
 end
 
 M.reload_on_cursor_move = function(buffers)
@@ -184,12 +189,28 @@ M._get_buffers_by_tab = function(tabnr)
 		local bufname = M._get_bufname(bufnr)
 		local current_path = vim.fn.expand("%:p:h")
 
-		if bufname ~= "" and bufname ~= current_path .. "/" then
+		local should_ignore_buffer = M._should_ignore_buffer(bufname)
+
+		if not should_ignore_buffer and bufname ~= "" and bufname ~= current_path .. "/" then
 			table.insert(buffers, { bufnr = bufnr, bufname = bufname })
 		end
 	end
 
 	return buffers
+end
+
+-- check if the buffer should be ignored
+-- @param bufname string
+-- @return boolean
+M._should_ignore_buffer = function(bufname)
+	for _, to_ignore in pairs(setup.bufs_names_to_ignore) do
+		local buf_without_path = M._filename_without_path(bufname)
+		local should_be_ignored = string.match(buf_without_path, to_ignore) ~= nil
+		if should_be_ignored then
+			return true
+		end
+	end
+	return false
 end
 
 M._get_bufname = function(bufnr)
@@ -236,6 +257,15 @@ M.merge_table_impl = function(t1, t2)
 			t1[k] = v
 		end
 	end
+end
+
+-- get the filename without the path
+-- e.g. path/to/file.lua -> file.lua
+--
+-- @param path string
+-- @return string
+M._filename_without_path = function(path)
+	return path:match("^.+/(.+)$") or path
 end
 
 return M
