@@ -189,7 +189,7 @@ M._get_buffers_by_tab = function(tabnr)
 		local bufname = M._get_bufname(bufnr)
 		local current_path = vim.fn.expand("%:p:h")
 
-		local should_ignore_buffer = M._should_ignore_buffer(bufname)
+		local should_ignore_buffer = M.should_ignore_buffer(setup.bufs_names_to_ignore, bufname)
 
 		if not should_ignore_buffer and bufname ~= "" and bufname ~= current_path .. "/" then
 			table.insert(buffers, { bufnr = bufnr, bufname = bufname })
@@ -200,11 +200,12 @@ M._get_buffers_by_tab = function(tabnr)
 end
 
 -- check if the buffer should be ignored
+-- @param bufs_to_ignore table
 -- @param bufname string
 -- @return boolean
-M._should_ignore_buffer = function(bufname)
-	for _, to_ignore in pairs(setup.bufs_names_to_ignore) do
-		local buf_without_path = M._filename_without_path(bufname)
+M.should_ignore_buffer = function(bufs_to_ignore, bufname)
+	for _, to_ignore in pairs(bufs_to_ignore) do
+		local buf_without_path = M.filename_without_path(bufname)
 		local should_be_ignored = string.match(buf_without_path, to_ignore) ~= nil
 		if should_be_ignored then
 			return true
@@ -264,7 +265,7 @@ end
 --
 -- @param path string
 -- @return string
-M._filename_without_path = function(path)
+M.filename_without_path = function(path)
 	return path:match("^.+/(.+)$") or path
 end
 
